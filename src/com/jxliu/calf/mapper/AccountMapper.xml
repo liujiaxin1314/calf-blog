@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jxliu.calf.mapper.AccountMapper" >
+  <resultMap id="BaseResultMap" type="com.jxliu.calf.pojo.Account" >
+    <id column="account_id" property="accountId" jdbcType="INTEGER" />
+    <result column="account_name" property="accountName" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="telephone" property="telephone" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="createtime" property="createtime" jdbcType="DATE" />
+    <result column="updatetime" property="updatetime" jdbcType="DATE" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    account_id, account_name, password, telephone, email, createtime, updatetime
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jxliu.calf.pojo.AccountExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from account
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from account
+    where account_id = #{accountId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from account
+    where account_id = #{accountId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jxliu.calf.pojo.AccountExample" >
+    delete from account
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jxliu.calf.pojo.Account">
+  	  <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="accountId">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
+    insert into account ( account_name, password, 
+      telephone, email, createtime, 
+      updatetime)
+    values (#{accountName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{telephone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{createtime,jdbcType=DATE}, 
+      #{updatetime,jdbcType=DATE})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jxliu.calf.pojo.Account" >
+    insert into account
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="accountId != null" >
+        account_id,
+      </if>
+      <if test="accountName != null" >
+        account_name,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+      <if test="telephone != null" >
+        telephone,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="updatetime != null" >
+        updatetime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="accountId != null" >
+        #{accountId,jdbcType=INTEGER},
+      </if>
+      <if test="accountName != null" >
+        #{accountName,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="telephone != null" >
+        #{telephone,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=DATE},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jxliu.calf.pojo.AccountExample" resultType="java.lang.Integer" >
+    select count(*) from account
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update account
+    <set >
+      <if test="record.accountId != null" >
+        account_id = #{record.accountId,jdbcType=INTEGER},
+      </if>
+      <if test="record.accountName != null" >
+        account_name = #{record.accountName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.password != null" >
+        password = #{record.password,jdbcType=VARCHAR},
+      </if>
+      <if test="record.telephone != null" >
+        telephone = #{record.telephone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.email != null" >
+        email = #{record.email,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createtime != null" >
+        createtime = #{record.createtime,jdbcType=DATE},
+      </if>
+      <if test="record.updatetime != null" >
+        updatetime = #{record.updatetime,jdbcType=DATE},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update account
+    set account_id = #{record.accountId,jdbcType=INTEGER},
+      account_name = #{record.accountName,jdbcType=VARCHAR},
+      password = #{record.password,jdbcType=VARCHAR},
+      telephone = #{record.telephone,jdbcType=VARCHAR},
+      email = #{record.email,jdbcType=VARCHAR},
+      createtime = #{record.createtime,jdbcType=DATE},
+      updatetime = #{record.updatetime,jdbcType=DATE}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jxliu.calf.pojo.Account" >
+    update account
+    <set >
+      <if test="accountName != null" >
+        account_name = #{accountName,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="telephone != null" >
+        telephone = #{telephone,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=DATE},
+      </if>
+      <if test="updatetime != null" >
+        updatetime = #{updatetime,jdbcType=DATE},
+      </if>
+    </set>
+    where account_id = #{accountId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jxliu.calf.pojo.Account" >
+    update account
+    set account_name = #{accountName,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      telephone = #{telephone,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=DATE},
+      updatetime = #{updatetime,jdbcType=DATE}
+    where account_id = #{accountId,jdbcType=INTEGER}
+  </update>
+  
+  <select id="accountLogin" parameterType="com.jxliu.calf.pojo.Account" resultType="com.jxliu.calf.pojo.Account">
+  	select * from account where 1=1 
+  	<if test="accountName!=null">
+  		and account_name = ${accountName}
+  	</if>
+  	<if test="password!=null">
+  		and password = ${password}
+  	</if>
+  </select>
+</mapper>

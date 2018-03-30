@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+
+	 <!-- 配置緩存管理器 -->
+    <bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+        <!-- 指定 ehcache 的配置文件，下面会给到 -->
+        <property name="cacheManagerConfigFile" value="classpath:ehcache-shiro.xml"/>
+    </bean>
+
+    <!-- 配置进行授权和认证的 Realm，要新增一个java类来实现，下面会有，class=包名.类名，init-methood是初始化的方法 -->
+    <bean id="myRealm" class="com.jxliu.calf.shiro.MyRealm" init-method="setCredentialMatcher"></bean>
+
+    <!-- 配置 Shiro 的 SecurityManager Bean. -->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="realm" ref="myRealm"/>
+    </bean>
+    
+    <!-- 配置 Bean 后置处理器: 会自动的调用和 Spring 整合后各个组件的生命周期方法. -->
+    <bean id="lifecycleBeanPostProcessor" 
+        class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+
+    <!-- 配置 ShiroFilter bean: 该 bean 的 id 必须和 web.xml 文件中配置的 shiro filter 的 name 一致  -->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <!-- 装配 securityManager -->
+        <property name="securityManager" ref="securityManager"/>
+        <!-- 配置登陆页面 -->
+        <property name="loginUrl" value="/login.jsp"/>
+        <!-- 登陆成功后的页面 -->
+        <property name="successUrl" value="/success.jsp"/>
+        <!-- 如果访问未授权的页面，会跳转到下面链接 -->
+        <property name="unauthorizedUrl" value="/unauthorized.jsp"/>
+        <!-- 具体配置需要拦截哪些 URL, 以及访问对应的 URL 时使用 Shiro 的什么 Filter 进行拦截.  -->
+        <property name="filterChainDefinitions">
+            <value>
+            <!-- ShiroFilter具有10个Filter校验功能！！！！
+				anon 不需要认证和登陆 可以访问
+				authc 必须认证后才能访问
+				perms 必须具有某个权限才能访问
+				roles  必须具有某个角色才能访问
+				port 请求必须符合端口才能访问
+				rest 限制HTTP请求方式 post、get
+				ssl 必须用https才能访问
+				user 必须存在用户才能访问 
+				存在用户（cookie）和认证（session）不一样
+				logout 必须session里面没有这个用户才能访问
+             -->
+                <!-- 配置登出: 使用 logout 过滤器 -->
+                /shiro-logout = logout
+                /shiro-* = anon
+                <!-- perms["xx","yy"]只有同时具有这两种权限的时候，才符合条件，才可以访问 -->
+                /administrator.jsp = perms["administrator:manage","admin:manage","diary:manage","personal:manage"]
+                /admin.jsp = perms["admin:manage","diary:manage","personal:manage"]
+                /user.jsp = perms["diary:manage","personal:manage"]
+				<!-- /administrator.jsp = roles[administrator]
+                	/user.jsp = roles[user]
+                	/admin.jsp = roles[admin] -->
+                /** = anon
+                <!-- /login.jsp = authc
+                /register/* = anon
+                /** = anon其他不拦截 -->
+            </value>
+        </property>
+    </bean>
+
+</beans>
